@@ -86,7 +86,7 @@ public class User extends TimeStampAbstract implements UserDetails {
         if (role != null) {
             return role.getAuthorities();
         } else {
-            // Return an empty collection if role is not exist
+            // Return an empty collection if role does not exist
             return Collections.emptyList();
         }
     }
