@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: springboot-setup-heakcg
+
+  ####### POSTGRES configuration #######
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/springboot_setup_heakcg
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+####### Prefix path api #######
+server:
+  servlet:
+    context-path: /api
+
+#--- Client JWT
+application:
+  security:
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 86400000
+      refresh-token:
+        expiration: 604800000
+
+logging:
+  level:
+    org.springframework.security.web: DEBUG
