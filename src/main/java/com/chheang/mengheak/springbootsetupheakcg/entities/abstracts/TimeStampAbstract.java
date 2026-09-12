@@ -1,4 +1,4 @@
-package com.chheang.mengheak.springbootsetupheakcg.models.abstracts;
+package com.chheang.mengheak.springbootsetupheakcg.entities.abstracts;
 
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;

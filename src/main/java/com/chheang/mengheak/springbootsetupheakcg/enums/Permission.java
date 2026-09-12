@@ -1,4 +1,4 @@
-package com.chheang.mengheak.springbootsetupheakcg.models;
+package com.chheang.mengheak.springbootsetupheakcg.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

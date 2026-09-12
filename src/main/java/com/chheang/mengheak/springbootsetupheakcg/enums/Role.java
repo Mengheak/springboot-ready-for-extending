@@ -1,4 +1,4 @@
-package com.chheang.mengheak.springbootsetupheakcg.models;
+package com.chheang.mengheak.springbootsetupheakcg.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.chheang.mengheak.springbootsetupheakcg.models.Permission.ADMIN_CREATE;
-import static com.chheang.mengheak.springbootsetupheakcg.models.Permission.ADMIN_DELETE;
-import static com.chheang.mengheak.springbootsetupheakcg.models.Permission.ADMIN_READ;
-import static com.chheang.mengheak.springbootsetupheakcg.models.Permission.ADMIN_UPDATE;
+import static com.chheang.mengheak.springbootsetupheakcg.enums.Permission.ADMIN_CREATE;
+import static com.chheang.mengheak.springbootsetupheakcg.enums.Permission.ADMIN_DELETE;
+import static com.chheang.mengheak.springbootsetupheakcg.enums.Permission.ADMIN_READ;
+import static com.chheang.mengheak.springbootsetupheakcg.enums.Permission.ADMIN_UPDATE;
 
 @RequiredArgsConstructor
 public enum Role {

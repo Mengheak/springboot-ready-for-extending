@@ -1,6 +1,6 @@
 package com.chheang.mengheak.springbootsetupheakcg.response;
 
-import com.chheang.mengheak.springbootsetupheakcg.models.User;
+import com.chheang.mengheak.springbootsetupheakcg.entities.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;

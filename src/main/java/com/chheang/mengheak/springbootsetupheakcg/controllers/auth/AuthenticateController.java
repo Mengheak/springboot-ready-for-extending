@@ -7,8 +7,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import com.chheang.mengheak.springbootsetupheakcg.models.Token;
-import com.chheang.mengheak.springbootsetupheakcg.models.User;
+import com.chheang.mengheak.springbootsetupheakcg.entities.Token;
+import com.chheang.mengheak.springbootsetupheakcg.entities.User;
 import com.chheang.mengheak.springbootsetupheakcg.repositories.TokenRepository;
 import com.chheang.mengheak.springbootsetupheakcg.repositories.UserRepository;
 import com.chheang.mengheak.springbootsetupheakcg.response.RegisterResponse;

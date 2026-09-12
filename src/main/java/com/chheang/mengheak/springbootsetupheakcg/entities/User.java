@@ -1,14 +1,15 @@
-package com.chheang.mengheak.springbootsetupheakcg.models;
+package com.chheang.mengheak.springbootsetupheakcg.entities;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.chheang.mengheak.springbootsetupheakcg.enums.Role;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.chheang.mengheak.springbootsetupheakcg.models.abstracts.TimeStampAbstract;
+import com.chheang.mengheak.springbootsetupheakcg.entities.abstracts.TimeStampAbstract;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

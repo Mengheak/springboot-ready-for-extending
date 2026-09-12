@@ -1,4 +1,4 @@
-package com.chheang.mengheak.springbootsetupheakcg.models;
+package com.chheang.mengheak.springbootsetupheakcg.entities;
 
 import com.chheang.mengheak.springbootsetupheakcg.types.TokenType;
 
