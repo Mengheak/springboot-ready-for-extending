@@ -15,7 +15,7 @@ import java.util.UUID;
 @Component
 @Slf4j
 public class RequestLog extends OncePerRequestFilter {
-    private static final String CORRELATION_ID_KEY = "correlationId";
+    private static final String CORRELATION_ID_KEY = UUID.randomUUID().toString();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
