@@ -5,7 +5,11 @@ import java.util.Collections;
 import java.util.List;
 
 import com.chheang.mengheak.springbootsetupheakcg.enums.Role;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -23,6 +27,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,43 +43,11 @@ public class User extends TimeStampAbstract implements UserDetails {
 
     private String name;
 
+    @Column(unique = true)
     private String email;
 
     @Column(name = "password", length = 255)
     private String password;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -81,16 +55,15 @@ public class User extends TimeStampAbstract implements UserDetails {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Token> tokens;
 
+    // --- UserDetails ---
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (role != null) {
-            return role.getAuthorities();
-        } else {
-            // Return an empty collection if role does not exist
-            return Collections.emptyList();
-        }
+        // Return an empty collection if role does not exist
+        return role != null ? role.getAuthorities() : Collections.emptyList();
     }
 
+    /** Spring Security's "username" is the email in this application. */
     @Override
     public String getUsername() {
         return email;
@@ -114,9 +87,5 @@ public class User extends TimeStampAbstract implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public Role getRole() {
-        return role;
     }
 }
