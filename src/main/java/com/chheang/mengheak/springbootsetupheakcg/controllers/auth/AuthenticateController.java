@@ -1,9 +1,14 @@
 package com.chheang.mengheak.springbootsetupheakcg.controllers.auth;
 
-import org.springframework.http.MediaType;
+import com.chheang.mengheak.springbootsetupheakcg.dto.LoginDTO;
+import com.chheang.mengheak.springbootsetupheakcg.dto.RegisterDTO;
+import com.chheang.mengheak.springbootsetupheakcg.mappers.UserMapper;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,79 +16,74 @@ import com.chheang.mengheak.springbootsetupheakcg.entities.Token;
 import com.chheang.mengheak.springbootsetupheakcg.entities.User;
 import com.chheang.mengheak.springbootsetupheakcg.repositories.TokenRepository;
 import com.chheang.mengheak.springbootsetupheakcg.repositories.UserRepository;
-import com.chheang.mengheak.springbootsetupheakcg.response.RegisterResponse;
+import com.chheang.mengheak.springbootsetupheakcg.response.AuthResponse;
 import com.chheang.mengheak.springbootsetupheakcg.services.JwtService;
-import com.chheang.mengheak.springbootsetupheakcg.types.TokenType;
+import com.chheang.mengheak.springbootsetupheakcg.enums.TokenType;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(path = "auth", consumes = { "*/*" })
-@AllArgsConstructor
+@RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthenticateController {
 
-    // Register service
-    final private JwtService jwtService;
+    private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final AuthenticationManager authenticationManager;
+    private final UserMapper userMapper;
 
-    @PostMapping(path = "/register", consumes = MediaType.ALL_VALUE)
-    public ResponseEntity<RegisterResponse> register(@ModelAttribute User request) {
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterDTO request) {
 
-        //--- Check if user is existed in db
-        User userExisted = userRepository.findByEmail(request.getEmail()).orElse(null);
-        if (userExisted != null) {
-            return ResponseEntity.ok(RegisterResponse.builder().message("User has existed").build());
+        //--- Check if user already exists in db
+        if (userRepository.existsByEmail(request.getEmail())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(AuthResponse.builder().message("User has existed").build());
         }
 
-        var user = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .role(request.getRole())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .build();
+        User user = userMapper.toEntity(request, passwordEncoder.encode(request.getPassword()));
+        User savedUser = userRepository.save(user);
 
-        var savedUser = userRepository.save(user);
-        String jwtToken = jwtService.generateToken(user);
-
-        // Save to token
+        String jwtToken = jwtService.generateToken(savedUser);
         saveUserToken(savedUser, jwtToken);
 
-        return ResponseEntity.ok(RegisterResponse.builder()
-                .message("Register Successfully.")
-                .accessToken(jwtToken)
-                .user(savedUser)
-                .build());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(AuthResponse.builder()
+                        .message("Register Successfully.")
+                        .accessToken(jwtToken)
+                        .user(userMapper.toResponse(savedUser))
+                        .build());
     }
 
-    @PostMapping(path = "/login", consumes = MediaType.ALL_VALUE)
-    public ResponseEntity<RegisterResponse> login(@RequestParam("email") String email,
-            @RequestParam("password") String password) {
-        // Login the email and password
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginDTO request) {
+        // Throws AuthenticationException (401/403) when the credentials do not match
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        email,
-                        password));
+                        request.getEmail(),
+                        request.getPassword()));
 
-        User user = userRepository.findByEmail(email).orElse(null);
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        if (user != null)
-            revokeAllUserTokens(user);
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        String jwtToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
 
-        return ResponseEntity.ok(RegisterResponse.builder()
-                .user(user)
+        return ResponseEntity.ok(AuthResponse.builder()
                 .message("Login successfully.")
+                .user(userMapper.toResponse(user))
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build());
     }
 
     private void saveUserToken(User user, String jwtToken) {
-        var token = Token.builder()
+        Token token = Token.builder()
                 .user(user)
                 .token(jwtToken)
                 .tokenType(TokenType.BEARER)
@@ -95,13 +95,13 @@ public class AuthenticateController {
 
     private void revokeAllUserTokens(User user) {
         var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
-        if (validUserTokens.isEmpty())
+        if (validUserTokens.isEmpty()) {
             return;
+        }
         validUserTokens.forEach(token -> {
             token.setExpired(true);
             token.setRevoked(true);
         });
         tokenRepository.saveAll(validUserTokens);
     }
-
 }
