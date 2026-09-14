@@ -2,20 +2,15 @@ package com.chheang.mengheak.springbootsetupheakcg.repositories;
 
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.chheang.mengheak.springbootsetupheakcg.entities.User;
 
-// This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
-// CRUD refers Create, Read, Update, Delete
-public interface UserRepository extends CrudRepository<User, Integer> {
+// Auto-implemented by Spring Data into a bean called userRepository.
+// JpaRepository adds paging, sorting, flushing and List-returning finders on top of CrudRepository.
+public interface UserRepository extends JpaRepository<User, Integer> {
+
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT u FROM User u WHERE u.email = :email")
-    Optional<User> findByEmailQuery(@Param("email") String email);
-
-    @Query("SELECT u FROM User u WHERE u.email = :email")
-    Optional<User> findByUsername(@Param("email") String email);
+    boolean existsByEmail(String email);
 }
